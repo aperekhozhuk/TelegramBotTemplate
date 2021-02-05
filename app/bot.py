@@ -1,15 +1,26 @@
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from app import settings, views
 
 
 class Bot:
+
+    commands = ("start",)
+
     def __init__(self) -> None:
         self.updater = Updater(token=settings.API_TOKEN, use_context=True)
         self.dispatcher = self.updater.dispatcher
+        self.set_handlers()
 
-        # Adding handlers to dispatcher
-        self.start_handler = CommandHandler("start", views.start)
-        self.dispatcher.add_handler(self.start_handler)
+    def set_handlers(self):
+        # Setting command handlers by their names
+        for command_name in self.commands:
+            self.dispatcher.add_handler(
+                CommandHandler(command_name, getattr(views, command_name))
+            )
+
+        # Handling unrecognized commands
+        unknown_handler = MessageHandler(Filters.text, views.unknown)
+        self.dispatcher.add_handler(unknown_handler)
 
     def run(self):
         if settings.MODE == "PRODUCTION":

@@ -17,3 +17,7 @@ def start(update, context):
         session.close()
 
     message.reply_text(f"Hello, {message.from_user.first_name}!")
+
+
+def unknown(update, context):
+    update.message.reply_text("Sorry, I don't understand you(")
